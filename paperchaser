@@ -76,7 +76,6 @@ def include_this_paper(paper_rec,exclude_list):
     If the user supplied a list of journals to exclude, this function is
     called. A simple string match between the source field in the paper and
     the list of excluded journals.
-
     """
 
     for i in exclude_list:
