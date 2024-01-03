@@ -30,7 +30,7 @@ def get_by_author(name, affiliation):
     all the papers for which they are a co-author, maximum 300. 
 
     The pubmed IDs are returned as a set. This is to avoid duplications with
-    other authors: if a paper was authored by 2 authors, it will only count
+    other oauthors: if a paper was authored by 2 authors, it will only count
     once
 
     """
@@ -119,7 +119,7 @@ def prep_bibliography(paper_list,exclude_list):
     return printlist 
 
 def in_year_range(paper_rec,year_range):
-    """ Check if a paper is in the requested publications year range"""
+    """ Check if a paper is in the requrest publication year range"""
     retval = False
     pub_year = get_paper_year(paper_rec)
     if pub_year in year_range:
