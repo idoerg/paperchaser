@@ -119,7 +119,7 @@ def prep_bibliography(paper_list,exclude_list):
     return printlist 
 
 def in_year_range(paper_rec,year_range):
-    """ Check if a paper is in the requrest publication year range"""
+    """ Check if a paper is in the request publication year range"""
     retval = False
     pub_year = get_paper_year(paper_rec)
     if pub_year in year_range:
@@ -140,12 +140,12 @@ def get_paper_year(paper_rec):
 
 def main(author_list, email, years, 
          affiliation,exclude_file,conflicts,datesort="F",outfile=None,verbose=0):
+    print("author_list", author_list)
     print("Chasing papers. This may take a bit...")
     Entrez.email = email
     year_range = range(years[0],years[1]+1)
     if verbose > 0:
         print(f"Checking between years {years[0]} and {years[1]}")
-        print("Authors:")
         for i in author_list: 
             print(i,)
     pubmed_ids = get_all_pubmed_ids(author_list, affiliation)
@@ -156,6 +156,7 @@ def main(author_list, email, years,
         for i in pubmed_ids:
             print(i,)
     paper_list = get_papers_by_ids(pubmed_ids)
+    print("paper list", paper_list)
     papers_in_year = []
     for paper in paper_list:
         if in_year_range(paper, year_range):
@@ -185,14 +186,20 @@ def author_file_to_list(author_file):
     author_list = []
     author_reader = csv.reader(author_file,delimiter='\t')
     for inline in author_reader:
-        author = f"{inline[1]} {inline[0]}{inline[2]}"
-        author_list.append(author)
+        if len(inline) != 3:
+            print(f"bad input in {author_file}",file=sys.stderr)
+            print(f"Format should be three tab-separated columns FirstName<tab>LastName<tab>Initial",file=sys.stderr)
+            raise Exception('Bad input',inline)
+        else:
+            author = f"{inline[1]} {inline[0]}{inline[2]}"
+            author_list.append(author)
     return author_list
+
 
 if __name__ == '__main__':
 
     print("""
-    paperchaser  Copyright (C) 2021  Iddo Friedberg 
+    paperchaser  Copyright (C) 2021-2026  Iddo Friedberg 
     This program comes with ABSOLUTELY NO WARRANTY. 
     This is free software, and you are welcome to redistribute it
     under certain conditions. See the GNU General Public License 
@@ -233,7 +240,8 @@ if __name__ == '__main__':
     if args.years[0] < 1930 or args.years[1] > int(datetime.now().year)+1:
         raise ValueError(f'Bad year range {args.years[0]}, {args.years[1]}')
     # Check validity of email addresss
-    if not re.match('^[A-z0-9._%+-]+@[A-z0-9.-]+\.[A-z]{2,}$',args.email):
+    # if not re.match('^[A-z0-9._%+-]+@[A-z0-9.-]+\.[A-z]{2,}$',args.email):
+    if not re.match('^[A-z0-9._%+-]+@[A-z0-9.-]+.[A-z]{2,}$',args.email):
         raise ValueError(f'Invalid email address {args.email}')
     # print(args.infile)
     # print(args.names)
